@@ -17,14 +17,24 @@ async function allUser () {
    return final;
     // console.log("executed")
 }
+
  async function getUser (id) {
 
     const result = await pool.query("select * from users where userid = ?",[id])
     console.log(result[0])
    
-    console.log("executed")
+    // console.log("executed")
 }
-getUser(9);
+
+async function getEmail (email) {
+
+    const result = await pool.query("select * from users where email = ?",[email])
+    console.log(result.userID)
+    const final = result.userID
+    return final
+    // console.log("executed")
+}
+getEmail("SungJinwo222@gmail.com");
  async function createUser(val1,val2){
     
     const result = await pool.query(
@@ -33,10 +43,11 @@ getUser(9);
     console.log(result)
 }
 // createUser("SungJinwo222@gmail.com","Dec99jjiiqm")
-getUser(10)
+// getUser(10)
 // pool.end()
 module.exports ={
     createUser,
     getUser,
-    allUser
+    allUser,
+    getEmail
 }
