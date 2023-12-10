@@ -2,6 +2,8 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const {getUser, createUser, allUser} = require("./database")
+const bcrypt = require('bcrypt')
 
 var morgan = require('morgan')
 app.use(morgan('dev'))
@@ -9,26 +11,34 @@ app.use(morgan('dev'))
 app.use(cors())
 app.use(express.json())
 app.use(morgan('dev'))
-const mysql = require('mysql2');
 
-// create a new MySQL connection
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'PASSWORD', 
-  database: 'E'
-});
-// connect to the MySQL database
-connection.connect((error) => {
-  if (error) {
-    console.error('Error connecting to MySQL database:', error);
-  } else {
-    console.log('Connected to MySQL database!');
+app.get("/users",async(request, response, next) => {
+const result = await allUser()
+console.log("The result",result)
+response.status(200).json(result)
+})
+app.post("/login",async(request,response,next) => {
+  const result = request.body
+  console.log(result)
+  response.status(200).json({"message" : "data stored"})
+
+})
+app.post("/register",async(request,response,next) => {
+  const result = request.body
+  console.log("register data",result)
+  const {email, pass} = result
+ 
+  if(!pass || !email){
+    response.status(400).json({error : "email or password is incomplete"})
   }
-});
+  if(pass.length < 8){
+    response.status(400).json({error : "password cannot be short"})
+  }
+  const value = await createUser(email,pass)
+  console.log("register message from sql ",value)
+  response.status(200).json({"message" : `register data stored ${value}`})
+})
 
-// close the MySQL connection
-connection.end();
 app.listen(8080, () => {
   console.log(`Server running on port 8080`)
 })
